@@ -302,7 +302,7 @@
 - 入力: `RejectExpenseReportRequest`(comment, 任意) + 経路パラメータ`{expense_report}`
 - 処理概要(Controllerメソッドが呼ばれる前に①②がFormRequestにより自動実行される):
   1. `RejectExpenseReportRequest::authorize()` → `ExpenseReportPolicy@reject`へ委譲(対象申請が提出済み状態かを判定。NG時は403、Controller未到達)
-  2. `RejectExpenseReportRequest`でバリデーション(commentの形式・文字数上限等)
+  2. `RejectExpenseReportRequest`でバリデーション(comment: 任意、文字列、最大1000文字)
   3. `ExpenseReportService::reject($expenseReport, $actor, $comment)`を呼び出し(ステータスを`submitted`→`rejected`に変更し、`rejection_reason`にcommentを設定し、`approval_histories`に1行追記。DBトランザクション内で実行)
   4. `redirect()->route('admin.expense-reports.index')` + 成功メッセージをflash
 - 利用するPolicy: `ExpenseReportPolicy@reject`(`RejectExpenseReportRequest::authorize()`から呼び出される。Controllerからは呼び出さない)
