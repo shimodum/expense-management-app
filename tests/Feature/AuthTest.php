@@ -24,6 +24,16 @@ test('user can login with correct credentials', function () {
     $this->assertAuthenticatedAs($user);
 });
 
+test('home page is displayed after login and shows a logout form', function () {
+    $user = User::factory()->create();
+
+    $response = $this->actingAs($user)->get(route('home'));
+
+    $response->assertOk();
+    $response->assertSee($user->name);
+    $response->assertSee('action="'.route('logout').'"', false);
+});
+
 test('login fails with an incorrect password', function () {
     User::factory()->create([
         'email' => 'employee@example.com',
@@ -50,7 +60,5 @@ test('authenticated user can logout', function () {
 });
 
 test('guest is redirected to login when accessing the home route', function () {
-    // HomeController@redirect の実際のリダイレクト先(expense-reports.index等)は
-    // フェーズ10で実装予定のため未検証。ここではauthミドルウェアの動作のみ確認する。
     $this->get(route('home'))->assertRedirect(route('login'));
 });
